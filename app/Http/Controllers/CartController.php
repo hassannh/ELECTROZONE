@@ -70,21 +70,40 @@ class CartController extends Controller
     public function update(Request $request)
     {
         $request->validate([
-            'product_id' => 'required|string',
-            'quantity'   => 'required|integer|min:1',
+            'quantities' => 'required|array',
+            'quantities.*' => 'required|integer|min:1',
         ]);
 
         $cart = $this->getCart();
-        $id = $request->product_id;
+        $updated = false;
 
-        if (isset($cart[$id])) {
-            $product = Product::find($id);
-            $qty = min($request->quantity, $product?->stock_quantity ?? $request->quantity);
-            $cart[$id]['quantity'] = $qty;
-            $this->saveCart($cart);
+        foreach ($request->quantities as $id => $qty) {
+            if (isset($cart[$id])) {
+                $product = Product::find($id);
+                $stock = $product?->stock_quantity ?? $qty;
+                $finalQty = min($qty, $stock);
+                
+                if ($cart[$id]['quantity'] != $finalQty) {
+                    $cart[$id]['quantity'] = $finalQty;
+                    $updated = true;
+                }
+            }
         }
 
-        return redirect()->route('cart.index')->with('success', 'Cart updated.');
+        if ($updated) {
+            $this->saveCart($cart);
+            $msg = 'Cart updated successfully.';
+            if ($request->has('checkout')) {
+                return redirect()->route('checkout.index')->with('success', $msg);
+            }
+            return redirect()->route('cart.index')->with('success', $msg);
+        }
+
+        if ($request->has('checkout')) {
+            return redirect()->route('checkout.index');
+        }
+
+        return redirect()->route('cart.index');
     }
 
     public function remove(string $productId)

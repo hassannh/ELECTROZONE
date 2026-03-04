@@ -35,7 +35,7 @@
             </div>
             <div class="flex items-center gap-4 w-full md:w-auto justify-between md:justify-end">
                 <!-- Language Switcher -->
-                <div class="relative" id="langSwitcher">
+                <div class="relative group" id="langSwitcher">
                     <button class="flex items-center gap-1.5 px-3 py-1.5 bg-white/10 border border-white/20 rounded-md text-white/90 hover:bg-white/15 transition-colors" id="langToggle" aria-expanded="false">
                         @php $locale = app()->getLocale(); @endphp
                         <span class="flex items-center gap-1">
@@ -45,7 +45,7 @@
                         </span>
                         <svg class="transition-transform duration-200" width="12" height="12" viewBox="0 0 12 12"><path d="M2 4l4 4 4-4" stroke="currentColor" stroke-width="1.8" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>
                     </button>
-                    <div class="absolute top-full right-0 mt-1 w-32 bg-white rounded-lg shadow-premium border border-border py-1 z-50 hidden group-hover:block" id="langDropdown">
+                    <div class="absolute top-full right-0 mt-1 w-32 bg-white rounded-lg shadow-premium border border-border py-1 z-50 opacity-0 invisible translate-y-2 group-hover:opacity-100 group-hover:visible group-hover:translate-y-0 [&.open]:opacity-100 [&.open]:visible [&.open]:translate-y-0 transition-all duration-200" id="langDropdown">
                         <a href="{{ route('lang.switch', 'ar') }}" class="flex items-center gap-2 px-3 py-2 text-dark hover:bg-surface transition-colors {{ $locale === 'ar' ? 'bg-surface font-bold' : '' }}">
                             <span>🇲🇦</span> العربية
                         </a>
@@ -311,7 +311,9 @@
 <footer class="bg-[#0a0a1a] text-white/70 pt-16 mt-16">
     <div class="max-w-7xl mx-auto px-6 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-[1.5fr_1fr_1fr_1fr] gap-8 pb-12">
         <div class="footer-brand">
-            <div class="text-xl font-extrabold text-white mb-4 uppercase tracking-tighter">⚡ ELECTROZONE AKKA</div>
+            <a href="{{ route('home') }}" class="inline-block mb-6">
+                <img src="{{ asset('images/logo.jpeg') }}" alt="ELECTROZONE Logo" class="h-16 w-auto object-contain brightness-0 invert opacity-90 hover:opacity-100 transition-opacity">
+            </a>
             <p class="text-sm leading-relaxed mb-5">{{ __('store.footer_tagline') }}</p>
             <div class="flex gap-2">
                 <a href="#" class="w-9 h-9 flex items-center justify-center bg-white/10 border border-white/20 rounded-lg text-white/70 hover:bg-primary hover:text-white transition-all font-bold">f</a>

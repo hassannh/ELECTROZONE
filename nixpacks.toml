@@ -1,0 +1,6 @@
+[phases.build]
+dependsOn = ["setup"]
+cmds = ["composer install --no-dev", "npm install", "npm run build"]
+
+[start]
+cmd = "php artisan serve --host=0.0.0.0 --port=$PORT"

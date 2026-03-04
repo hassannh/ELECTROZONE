@@ -67,7 +67,8 @@ return [
     'shipping_policy'    => 'Politique de livraison',
     'returns'            => 'Retours',
     'faq'                => 'FAQ',
-    'location'           => '📍 Akka, Assa-Zag, Maroc',
+    'location'           => '📍 Akka, Tata, Maroc',
+    'phone_number'       => '0676834412',
     'working_hours'      => '🕐 Lun–Sam : 9h00 – 20h00',
 
     'search_results'     => 'Résultats pour',

@@ -85,7 +85,7 @@
     </div>
   </div>
   <div class="footer">
-    © {{ date('Y') }} ELECTROZONE AKKA – Akka, Morocco<br>
+    © {{ date('Y') }} ELECTROZONE AKKA – Akka, Tata, Morocco<br>
     This email was sent because you placed an order on our website.
   </div>
 </div>

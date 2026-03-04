@@ -342,8 +342,8 @@
         <div>
             <h4 class="text-white text-[0.9rem] font-bold mb-4 uppercase tracking-[0.05em]">{{ __('store.contact_info') }}</h4>
             <div class="flex flex-col gap-2">
-                <p class="text-sm text-white/60 mb-2">📍 {{ __('store.location_akka') }}</p>
-                <p class="text-sm text-white/60 mb-2">📞 +212 600-000000</p>
+                <p class="text-sm text-white/60 mb-2">{{ __('store.location') }}</p>
+                <p class="text-sm text-white/60 mb-2">📞 {{ __('store.phone_number') }}</p>
                 <p class="text-sm text-white/60 mb-2">✉️ contact@electrozone.ma</p>
             </div>
         </div>

@@ -75,7 +75,8 @@ return [
     'shipping_policy'    => 'سياسة الشحن',
     'returns'            => 'الإرجاع',
     'faq'                => 'الأسئلة الشائعة',
-    'location'           => '📍 أكا، أسا-زاك، المغرب',
+    'location'           => '📍 أكا، طاطا، المغرب',
+    'phone_number'       => '0676834412',
     'working_hours'      => '🕐 الاثنين–السبت: 9:00 – 20:00',
 
     // Search

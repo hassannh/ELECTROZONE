@@ -34,23 +34,25 @@ WORKDIR /app
 COPY composer.json composer.lock ./
 RUN composer install --no-dev --optimize-autoloader --no-scripts --no-interaction
 
-# Install Node dependencies and build assets
+# Install Node dependencies
 COPY package.json package-lock.json ./
 RUN npm ci
 
+# Copy all source files
 COPY . .
+
+# Build frontend assets
 RUN npm run build
 
 # Create storage structure and set permissions
 RUN mkdir -p storage/framework/{sessions,views,cache,testing} storage/logs bootstrap/cache \
     && chmod -R 775 storage bootstrap/cache
 
-# Cache Laravel config/routes (view:cache skipped — compiles on-demand at runtime)
-RUN php artisan config:cache \
-    && php artisan event:cache \
-    && php artisan route:cache
-
 EXPOSE ${PORT:-8000}
 
-# Run migrations then start the server
-CMD php artisan migrate --force && php artisan serve --host=0.0.0.0 --port=${PORT:-8000}
+# At runtime: cache config (reads real env vars), run migrations, then serve
+CMD php artisan config:cache \
+    && php artisan event:cache \
+    && php artisan route:cache \
+    && php artisan migrate --force \
+    && php artisan serve --host=0.0.0.0 --port=${PORT:-8000}

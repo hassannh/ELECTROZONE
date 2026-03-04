@@ -50,9 +50,11 @@ RUN mkdir -p storage/framework/{sessions,views,cache,testing} storage/logs boots
 
 EXPOSE ${PORT:-8000}
 
-# At runtime: cache config (reads real env vars), run migrations, then serve
+# At runtime: cache config (reads real env vars), wipe orphaned tables, then serve
+# NOTE: migrate:fresh drops all tables and recreates them (safe since no real data yet)
+# Switch to 'migrate --force' after first successful deploy
 CMD php artisan config:cache \
     && php artisan event:cache \
     && php artisan route:cache \
-    && php artisan migrate --force \
+    && php artisan migrate:fresh --force \
     && php artisan serve --host=0.0.0.0 --port=${PORT:-8000}

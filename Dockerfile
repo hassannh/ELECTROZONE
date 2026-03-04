@@ -46,12 +46,14 @@ RUN npm run build
 
 # Create storage structure and set permissions
 RUN mkdir -p \
+    storage/app/public \
     storage/framework/sessions \
     storage/framework/views \
     storage/framework/cache/data \
     storage/framework/testing \
     storage/logs \
     bootstrap/cache \
+    && php artisan storage:link \
     && chmod -R 777 storage bootstrap/cache
 
 EXPOSE ${PORT:-8000}
@@ -60,5 +62,6 @@ EXPOSE ${PORT:-8000}
 CMD php artisan config:cache \
     && php artisan event:cache \
     && php artisan route:cache \
+    && php artisan storage:link --force \
     && php artisan migrate --force \
     && php artisan serve --host=0.0.0.0 --port=${PORT:-8000}

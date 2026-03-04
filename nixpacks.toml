@@ -3,6 +3,7 @@ nixPkgs = ["nodejs_20", "php82", "php82Packages.composer"]
 
 [phases.install]
 cmds = [
+  "install-php-extensions pdo_mysql mysqli",
   "composer install --no-dev --optimize-autoloader",
   "npm ci",
   "npm run build",

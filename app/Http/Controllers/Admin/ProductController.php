@@ -35,6 +35,21 @@ class ProductController extends Controller
         return view('admin.products.create', compact('categories'));
     }
 
+    private function validateUploadedImages(Request $request): void
+    {
+        $allowed = ['image/jpeg', 'image/png', 'image/webp', 'image/gif'];
+
+        foreach ($request->file('images', []) as $file) {
+            // Use finfo to read the actual file bytes, not just the declared extension
+            $finfo    = new \finfo(FILEINFO_MIME_TYPE);
+            $realMime = $finfo->file($file->getPathname());
+
+            if (!in_array($realMime, $allowed, true)) {
+                abort(422, "One or more uploaded files are not valid images. Detected MIME: {$realMime}");
+            }
+        }
+    }
+
     public function store(Request $request)
     {
         $data = $request->validate([
@@ -52,8 +67,12 @@ class ProductController extends Controller
             'is_featured'       => 'boolean',
             'is_new'            => 'boolean',
             'is_on_sale'        => 'boolean',
-            'images.*'          => 'nullable|image|max:5120',
+            // mimes: allowlist by actual MIME type; max 4 MB per image
+            'images.*'          => 'nullable|file|mimes:jpg,jpeg,png,webp,gif|max:4096',
         ]);
+
+        // Double-check with finfo (catches renamed executables like evil.php → photo.jpg)
+        $this->validateUploadedImages($request);
 
         $data['is_active']  = $request->boolean('is_active');
         $data['is_featured'] = $request->boolean('is_featured');
@@ -122,8 +141,11 @@ class ProductController extends Controller
             'is_featured'       => 'boolean',
             'is_new'            => 'boolean',
             'is_on_sale'        => 'boolean',
-            'images.*'          => 'nullable|image|max:5120',
+            'images.*'          => 'nullable|file|mimes:jpg,jpeg,png,webp,gif|max:4096',
         ]);
+
+        // finfo double-check for disguised file uploads
+        $this->validateUploadedImages($request);
 
         $data['is_active']   = $request->boolean('is_active');
         $data['is_featured'] = $request->boolean('is_featured');

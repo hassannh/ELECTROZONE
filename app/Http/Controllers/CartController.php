@@ -61,7 +61,12 @@ class CartController extends Controller
         $this->saveCart($cart);
 
         if ($request->expectsJson()) {
-            return response()->json(['success' => true, 'count' => array_sum(array_column($cart, 'quantity'))]);
+            $total = array_sum(array_map(fn($i) => $i['price'] * $i['quantity'], $cart));
+            return response()->json([
+                'success' => true,
+                'count'   => array_sum(array_column($cart, 'quantity')),
+                'total'   => number_format($total, 2) . ' MAD'
+            ]);
         }
 
         return back()->with('success', '"' . $product->name . '" added to cart!');
@@ -118,6 +123,10 @@ class CartController extends Controller
     public function count()
     {
         $cart = $this->getCart();
-        return response()->json(['count' => array_sum(array_column($cart, 'quantity'))]);
+        $total = array_sum(array_map(fn($i) => $i['price'] * $i['quantity'], $cart));
+        return response()->json([
+            'count' => array_sum(array_column($cart, 'quantity')),
+            'total' => number_format($total, 2) . ' MAD'
+        ]);
     }
 }

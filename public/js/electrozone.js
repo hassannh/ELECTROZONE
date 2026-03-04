@@ -55,65 +55,100 @@ document.addEventListener('DOMContentLoaded', () => {
 
 
     /* ── 3. LIVE SEARCH AUTOCOMPLETE ─────────────────────── */
-    const searchInput = document.getElementById('searchInput');
-    const searchDropdown = document.getElementById('searchDropdown');
-    const searchResults = document.getElementById('searchResults');
+    const searchInput = document.getElementById('searchInput'); // Desktop
+    const searchDropdown = document.getElementById('searchDropdown'); // Desktop
+    const searchResults = document.getElementById('searchResults'); // Desktop
+
+    const mobileSearchInput = document.getElementById('mobileSearchInput');
+    const mobileSearchInputWrapper = document.getElementById('mobileSearchInputWrapper');
+    const mobileSearchDropdown = document.getElementById('mobileSearchDropdown');
+    const mobileSearchResults = document.getElementById('mobileSearchResults');
+
     const autocompleteUrl = document.querySelector('meta[name="autocomplete-url"]')?.content;
     const searchForm = document.getElementById('searchForm');
 
     let debounceTimer;
 
-    function clearDropdown() {
-        searchDropdown?.classList.remove('open');
-        if (searchResults) searchResults.innerHTML = '';
+    function clearDropdown(dropdown, results) {
+        dropdown?.classList.remove('open');
+        if (results) results.innerHTML = '';
     }
 
-    searchInput?.addEventListener('input', () => {
-        clearTimeout(debounceTimer);
-        const q = searchInput.value.trim();
-        if (q.length < 2) { clearDropdown(); return; }
+    // Global toggle for Expanding Mobile Search
+    window.toggleMobileSearch = () => {
+        if (!mobileSearchInputWrapper) return;
+        const isActive = mobileSearchInputWrapper.classList.toggle('active');
+        if (isActive) {
+            setTimeout(() => mobileSearchInput?.focus(), 300);
+        } else {
+            if (mobileSearchInput) mobileSearchInput.value = '';
+            clearDropdown(mobileSearchDropdown, mobileSearchResults);
+        }
+    };
 
-        debounceTimer = setTimeout(async () => {
-            try {
-                const res = await fetch(`${autocompleteUrl}?q=${encodeURIComponent(q)}`);
-                const data = await res.json();
+    // Generalized search listener
+    function initSearch(input, dropdown, results) {
+        if (!input) return;
 
-                if (!searchResults) return;
+        input.addEventListener('input', () => {
+            clearTimeout(debounceTimer);
+            const q = input.value.trim();
 
-                if (data.length === 0) {
-                    searchResults.innerHTML = `<div class="search-no-results">لا توجد نتائج / No results found</div>`;
-                } else {
-                    const isRtl = document.documentElement.dir === 'rtl';
-                    searchResults.innerHTML = data.map(item => `
-                        <a class="search-result-item" href="${item.url}">
-                            <div>
-                                <div class="search-result-name">${item.name}</div>
-                                <div class="search-result-brand">${item.brand}</div>
-                            </div>
-                            <div class="search-result-price">${item.price}</div>
-                        </a>
-                    `).join('')
-                        + `<a class="search-view-all" href="${searchForm?.action}?query=${encodeURIComponent(q)}">
-                        ${isRtl ? 'عرض كل النتائج ←' : 'View all results →'}
-                       </a>`;
-                }
-                searchDropdown?.classList.add('open');
-            } catch (err) {
-                clearDropdown();
+            if (q.length < 2) {
+                clearDropdown(dropdown, results);
+                return;
             }
-        }, 280);
-    });
+
+            debounceTimer = setTimeout(async () => {
+                try {
+                    const res = await fetch(`${autocompleteUrl}?q=${encodeURIComponent(q)}`);
+                    const data = await res.json();
+                    if (!results) return;
+
+                    if (data.length === 0) {
+                        results.innerHTML = `<div class="p-8 text-center text-light font-bold">لا توجد نتائج / No results found</div>`;
+                    } else {
+                        const isRtl = document.documentElement.dir === 'rtl';
+                        const html = data.map(item => `
+                            <a class="flex items-center gap-4 p-4 border-b border-border/40 hover:bg-surface transition-colors" href="${item.url}">
+                                <div class="w-12 h-12 bg-surface rounded-lg overflow-hidden shrink-0">
+                                    <img src="${item.image || '/images/placeholder.png'}" class="w-full h-full object-cover">
+                                </div>
+                                <div class="flex-1 min-w-0">
+                                    <div class="font-bold text-dark truncate">${item.name}</div>
+                                    <div class="text-[0.7rem] font-bold text-light uppercase tracking-tight">${item.brand}</div>
+                                </div>
+                                <div class="font-black text-primary">${item.price}</div>
+                            </a>
+                        `).join('');
+
+                        results.innerHTML = html + `
+                            <a class="block p-4 text-center bg-primary/5 text-primary font-black uppercase tracking-widest text-xs hover:bg-primary/10 transition-colors" href="${searchForm?.action}?query=${encodeURIComponent(q)}">
+                                ${isRtl ? 'عرض كل النتائج ←' : 'View all results →'}
+                            </a>`;
+                    }
+                    dropdown?.classList.add('open');
+                } catch (err) {
+                    clearDropdown(dropdown, results);
+                }
+            }, 280);
+        });
+
+        input.addEventListener('keydown', e => { if (e.key === 'Escape') clearDropdown(dropdown, results); });
+    }
+
+    // Initialize both
+    initSearch(searchInput, searchDropdown, searchResults);
+    initSearch(mobileSearchInput, mobileSearchDropdown, mobileSearchResults);
 
     // Close dropdown on outside click
     document.addEventListener('click', e => {
-        if (!searchInput?.contains(e.target) && !searchDropdown?.contains(e.target)) {
-            clearDropdown();
+        if (searchInput && !searchInput.contains(e.target) && !searchDropdown?.contains(e.target)) {
+            clearDropdown(searchDropdown, searchResults);
         }
-    });
-
-    // Keyboard navigation in dropdown
-    searchInput?.addEventListener('keydown', e => {
-        if (e.key === 'Escape') clearDropdown();
+        if (mobileSearchInput && !mobileSearchInput.contains(e.target) && !mobileSearchDropdown?.contains(e.target) && !e.target.closest('button[onclick*="toggleMobileSearch"]')) {
+            if (mobileSearchInputWrapper?.classList.contains('active')) toggleMobileSearch();
+        }
     });
 
 
@@ -165,12 +200,62 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
 
+    /* ── 7. AJAX ADD TO CART ────────────────────────────────── */
+    document.addEventListener('submit', async (e) => {
+        const form = e.target;
+        if (!form.action || !form.action.includes('/cart/add')) return;
+
+        e.preventDefault();
+        const btn = form.querySelector('button[type="submit"]');
+        if (!btn || btn.disabled) return;
+
+        const originalHtml = btn.innerHTML;
+        const width = btn.offsetWidth;
+        btn.style.width = `${width}px`;
+        btn.disabled = true;
+        btn.innerHTML = `<svg class="animate-spin h-5 w-5 mx-auto" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4" fill="none"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>`;
+
+        try {
+            const formData = new FormData(form);
+            const response = await fetch(form.action, {
+                method: 'POST',
+                body: formData,
+                headers: { 'X-Requested-With': 'XMLHttpRequest' }
+            });
+            const data = await response.json();
+
+            if (data.success) {
+                updateCartBadge(data);
+                btn.classList.remove('bg-primary');
+                btn.classList.add('bg-accent');
+                btn.innerHTML = `✅ Added`;
+                setTimeout(() => {
+                    btn.classList.remove('bg-accent');
+                    btn.classList.add('bg-primary');
+                    btn.innerHTML = originalHtml;
+                    btn.disabled = false;
+                    btn.style.width = '';
+                }, 2000);
+            }
+        } catch (err) {
+            btn.innerHTML = originalHtml;
+            btn.disabled = false;
+            btn.style.width = '';
+        }
+    });
+
     /* ── 8. CART COUNT LIVE UPDATE ───────────────────────────── */
-    function updateCartBadge(count) {
-        const badge = document.getElementById('cartBadge');
-        const countTop = document.getElementById('cartCountTop');
+    function updateCartBadge(data) {
+        const badge = document.getElementById('cartBadge'); // Mobile
+        const badgeTop = document.getElementById('cartCountTop'); // Desktop
+        const totalHeader = document.getElementById('cartTotalHeader'); // Desktop
+
+        const count = data.count ?? 0;
+        const total = data.total ?? '0.00 MAD';
+
         if (badge) badge.textContent = count;
-        if (countTop) countTop.textContent = count;
+        if (badgeTop) badgeTop.textContent = count;
+        if (totalHeader) totalHeader.textContent = total;
     }
 
     // Poll cart count unobtrusively every time page becomes visible
@@ -178,7 +263,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (document.visibilityState === 'visible') {
             fetch('/cart/count')
                 .then(r => r.json())
-                .then(d => updateCartBadge(d.count ?? 0))
+                .then(d => updateCartBadge(d))
                 .catch(() => { });
         }
     });

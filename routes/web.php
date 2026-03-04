@@ -28,23 +28,24 @@ Route::get('/products', [ProductController::class, 'index'])->name('products.ind
 Route::get('/products/{id}/{slug}', [ProductController::class, 'show'])->name('products.show');
 Route::get('/category/{slug}', [ProductController::class, 'byCategory'])->name('products.category');
 
-// Cart
+// Cart  (30 mutations per minute per IP)
 Route::get('/cart', [CartController::class, 'index'])->name('cart.index');
-Route::post('/cart/add', [CartController::class, 'add'])->name('cart.add');
-Route::put('/cart/update', [CartController::class, 'update'])->name('cart.update');
-Route::delete('/cart/remove/{productId}', [CartController::class, 'remove'])->name('cart.remove');
+Route::post('/cart/add', [CartController::class, 'add'])->middleware('throttle:30,1')->name('cart.add');
+Route::put('/cart/update', [CartController::class, 'update'])->middleware('throttle:30,1')->name('cart.update');
+Route::delete('/cart/remove/{productId}', [CartController::class, 'remove'])->middleware('throttle:30,1')->name('cart.remove');
 Route::get('/cart/count', [CartController::class, 'count'])->name('cart.count');
 
-// Checkout
+// Checkout (10 orders per minute per IP — prevents order-flooding abuse)
 Route::get('/checkout', [CheckoutController::class, 'index'])->name('checkout.index');
-Route::post('/checkout', [CheckoutController::class, 'store'])->name('checkout.store');
+Route::post('/checkout', [CheckoutController::class, 'store'])->middleware('throttle:10,1')->name('checkout.store');
 Route::get('/checkout/confirm/{orderId}', [CheckoutController::class, 'confirm'])->name('checkout.confirm');
 
 // ─── Admin ───────────────────────────────────────────────────────────────────
 Route::prefix('admin')->name('admin.')->group(function () {
     // Auth (no middleware)
     Route::get('/login', [AuthController::class, 'showLogin'])->name('login');
-    Route::post('/login', [AuthController::class, 'login'])->name('login.post');
+    // 5 login attempts per minute per IP — brute-force protection
+    Route::post('/login', [AuthController::class, 'login'])->middleware('throttle:5,1')->name('login.post');
     Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 
     // Protected admin routes

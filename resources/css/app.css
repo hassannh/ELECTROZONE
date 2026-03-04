@@ -1,11 +1,92 @@
-@import 'tailwindcss';
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
 
-@source '../../vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php';
-@source '../../storage/framework/views/*.php';
-@source '../**/*.blade.php';
-@source '../**/*.js';
+@layer utilities {
+    .no-scrollbar {
+        -ms-overflow-style: none;
+        scrollbar-width: none;
+    }
 
-@theme {
-    --font-sans: 'Instrument Sans', ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji',
-        'Segoe UI Symbol', 'Noto Color Emoji';
+    .no-scrollbar::-webkit-scrollbar {
+        display: none;
+    }
+
+    .glass-sidebar {
+        background: rgba(255, 255, 255, 0.88);
+        backdrop-filter: blur(20px) saturate(180%);
+        -webkit-backdrop-filter: blur(20px) saturate(180%);
+        border-right: 1px solid rgba(255, 255, 255, 0.3);
+    }
+
+    .top-bar-solid {
+        background: #050510 !important;
+    }
+
+    .hero-electronic-bg {
+        background-image: linear-gradient(rgba(5, 5, 20, 0.8), rgba(5, 5, 20, 0.7)), url('/images/electronic-bg.png');
+        background-size: cover;
+        background-position: center;
+        background-attachment: fixed;
+    }
+
+    .float-slow {
+        animation: float 6s ease-in-out infinite;
+    }
+
+    @keyframes float {
+
+        0%,
+        100% {
+            transform: translateY(0);
+        }
+
+        50% {
+            transform: translateY(-5px);
+        }
+    }
+}
+
+@layer components {
+
+    /* Mobile Drawer States */
+    #mobileDrawer.open {
+        transform: translateX(0) !important;
+    }
+
+    #mobileOverlay.open {
+        display: block !important;
+        opacity: 1 !important;
+        backdrop-filter: blur(12px) !important;
+        -webkit-backdrop-filter: blur(12px) !important;
+    }
+
+    #mobileSearchOverlay.open {
+        transform: translateY(0) !important;
+    }
+
+    /* Expanding Mobile Search Styles */
+    #mobileSearchInputWrapper.active {
+        opacity: 1 !important;
+        pointer-events: auto !important;
+        transform: translateX(0) !important;
+    }
+
+    #mobileSearchDropdown.open,
+    #searchDropdown.open {
+        display: block !important;
+    }
+
+    /* Hamburger Active Animation */
+    #hamburger.active span:nth-child(1) {
+        transform: translateY(8px) rotate(45deg);
+    }
+
+    #hamburger.active span:nth-child(2) {
+        opacity: 0;
+    }
+
+    #hamburger.active span:nth-child(3) {
+        transform: translateY(-8px) rotate(-45deg);
+    }
 }

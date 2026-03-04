@@ -136,7 +136,11 @@
                 </div>
 
                 <div class="flex items-center gap-3" id="mobileHeaderActions">
-                    {{-- Hide desktop redundant cart --}}
+                    {{-- Mobile Search Trigger --}}
+                    <button class="flex md:hidden items-center justify-center w-10 h-10 bg-surface rounded-full text-dark shadow-sm border border-border/50" onclick="toggleMobileSearch()">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+                    </button>
+
                     {{-- Standard cart button (Visible on mobile only now) --}}
                     <a href="{{ route('cart.index') }}" class="flex md:hidden items-center gap-2 bg-primary text-white px-4 py-2 rounded-full font-bold shadow-md" id="cartBtn">
                         <div class="relative">

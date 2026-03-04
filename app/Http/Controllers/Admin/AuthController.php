@@ -43,9 +43,9 @@ class AuthController extends Controller
         }
 
         // Record failed attempt; lock after 5 failures for 5 minutes
-        RateLimiter::hit($key, decay: 300);
+        RateLimiter::hit($key, 300);
 
-        $remaining = RateLimiter::remaining($key, maxAttempts: 5);
+        $remaining = RateLimiter::remaining($key, 5);
         return back()
             ->withErrors(['email' => "Invalid credentials. {$remaining} attempt(s) remaining before lockout."])
             ->withInput($request->only('email'));

@@ -44,6 +44,15 @@
             <a href="{{ route('admin.categories.index') }}" class="sidebar-link {{ request()->routeIs('admin.categories.*') ? 'active' : '' }}">
                 <span class="nav-icon">📂</span> Categories
             </a>
+
+            <div class="sidebar-divider"></div>
+
+            <a href="{{ route('admin.admins.index') }}" class="sidebar-link {{ request()->routeIs('admin.admins.*') ? 'active' : '' }}">
+                <span class="nav-icon">👥</span> Admins
+            </a>
+            <a href="{{ route('admin.profile.password') }}" class="sidebar-link {{ request()->routeIs('admin.profile.*') ? 'active' : '' }}">
+                <span class="nav-icon">🔒</span> Security
+            </a>
         </nav>
 
         <div class="sidebar-footer">

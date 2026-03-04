@@ -73,5 +73,12 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::get('/categories/{category}/edit', [AdminCategoryController::class, 'edit'])->name('categories.edit');
         Route::put('/categories/{category}', [AdminCategoryController::class, 'update'])->name('categories.update');
         Route::delete('/categories/{category}', [AdminCategoryController::class, 'destroy'])->name('categories.destroy');
+
+        // Admin Management
+        Route::resource('admins', AdminManagementController::class);
+        
+        // Profile Settings
+        Route::get('/profile/password', [AdminProfileController::class, 'showChangePassword'])->name('profile.password');
+        Route::put('/profile/password', [AdminProfileController::class, 'updatePassword'])->name('profile.password.update');
     });
 });

@@ -10,38 +10,38 @@
 
         <div class="form-grid-2">
             <div class="form-group">
-                <label>Product Name *</label>
+                <label>Product Name <span class="text-primary">*</span></label>
                 <input type="text" name="name" value="{{ old('name') }}" class="input {{ $errors->has('name') ? 'input-error' : '' }}" required>
                 @error('name')<span class="error-msg">{{ $message }}</span>@enderror
             </div>
             <div class="form-group">
-                <label>Brand *</label>
-                <input type="text" name="brand" value="{{ old('brand') }}" class="input" required>
+                <label>Brand</label>
+                <input type="text" name="brand" value="{{ old('brand') }}" class="input">
             </div>
         </div>
 
         <div class="form-group">
-            <label>Short Description * (max 500 chars)</label>
-            <input type="text" name="short_description" value="{{ old('short_description') }}" class="input" required maxlength="500">
+            <label>Short Description <small>(max 500 chars)</small></label>
+            <input type="text" name="short_description" value="{{ old('short_description') }}" class="input" maxlength="500">
         </div>
 
         <div class="form-group">
-            <label>Full Description *</label>
-            <textarea name="description" rows="5" class="input textarea" required>{{ old('description') }}</textarea>
+            <label>Full Description</label>
+            <textarea name="description" rows="5" class="input textarea">{{ old('description') }}</textarea>
         </div>
 
         <div class="form-grid-3">
             <div class="form-group">
-                <label>Price (MAD) *</label>
-                <input type="number" name="price" value="{{ old('price') }}" class="input" step="0.01" min="0" required>
+                <label>Price (MAD)</label>
+                <input type="number" name="price" value="{{ old('price') }}" class="input" step="0.01" min="0">
             </div>
             <div class="form-group">
                 <label>Old Price (MAD) <small>optional, for sale</small></label>
                 <input type="number" name="old_price" value="{{ old('old_price') }}" class="input" step="0.01" min="0">
             </div>
             <div class="form-group">
-                <label>Stock Quantity *</label>
-                <input type="number" name="stock_quantity" value="{{ old('stock_quantity', 0) }}" class="input" min="0" required>
+                <label>Stock Quantity</label>
+                <input type="number" name="stock_quantity" value="{{ old('stock_quantity', 0) }}" class="input" min="0">
             </div>
         </div>
 
@@ -69,7 +69,7 @@
         </div>
 
         <div class="form-group">
-            <label>Product Images <small>(Max 5, JPG/PNG/WebP, max 5MB each)</small></label>
+            <label>Product Images <small>(Select multiple files. Max 20, JPG/PNG/WebP, max 5MB each)</small></label>
             <input type="file" name="images[]" multiple accept="image/*" class="input-file">
         </div>
 

@@ -21,23 +21,34 @@
             @php $images = $product->images; @endphp
             @if($images->count() > 1)
             <div class="flex flex-row lg:flex-col gap-3 overflow-x-auto lg:overflow-visible no-scrollbar shrink-0">
-                @foreach($images as $img)
+                @foreach($images as $index => $img)
                 <button class="w-16 h-16 lg:w-20 lg:h-20 shrink-0 border-2 rounded-xl overflow-hidden transition-all {{ $loop->first ? 'border-primary shadow-md' : 'border-transparent opacity-60 hover:opacity-100 hover:border-border' }}"
-                        onclick="switchImage(this, '{{ asset('storage/' . $img->path) }}')">
+                        onclick="switchImage(this, '{{ asset('storage/' . $img->path) }}', {{ $index }})">
                     <img src="{{ asset('storage/' . $img->path) }}" alt="{{ $product->name }}" class="w-full h-full object-cover">
                 </button>
                 @endforeach
             </div>
             @endif
 
-            <div class="relative flex-1 bg-surface rounded-3xl overflow-hidden border border-border/50 group shadow-sm">
+            <div class="relative flex-1 bg-surface rounded-3xl overflow-hidden border border-border/50 group shadow-sm flex items-center justify-center">
                 @if($images->count())
                     <img id="mainImg"
                          src="{{ asset('storage/' . $images->first()->path) }}"
                          alt="{{ $product->name }}"
-                         class="w-full h-full object-contain aspect-square cursor-zoom-in group-hover:scale-105 transition-transform duration-700"
+                         class="w-full h-full object-contain aspect-square cursor-zoom-in group-hover:scale-[1.02] transition-transform duration-700"
                          onclick="openLightbox(this.src)">
-                    <div class="absolute bottom-4 right-4 bg-dark/20 backdrop-blur-md text-white px-3 py-1.5 rounded-full text-[0.65rem] font-black pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity">🔍 CLICK TO ZOOM</div>
+                    
+                    @if($images->count() > 1)
+                    {{-- Nav Buttons --}}
+                    <button class="absolute left-4 top-1/2 -translate-y-1/2 w-10 h-10 bg-white/80 backdrop-blur-md rounded-full flex items-center justify-center text-dark shadow-md opacity-0 group-hover:opacity-100 transition-opacity hover:bg-white" onclick="prevImage()">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg>
+                    </button>
+                    <button class="absolute right-4 top-1/2 -translate-y-1/2 w-10 h-10 bg-white/80 backdrop-blur-md rounded-full flex items-center justify-center text-dark shadow-md opacity-0 group-hover:opacity-100 transition-opacity hover:bg-white" onclick="nextImage()">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg>
+                    </button>
+                    @endif
+
+                    <div class="absolute bottom-4 right-4 bg-dark/20 backdrop-blur-md text-white px-3 py-1.5 rounded-full text-[0.65rem] font-black pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity uppercase tracking-widest">🔍 Zoom</div>
                 @else
                     <div class="w-full aspect-square flex items-center justify-center text-7xl bg-surface animate-pulse">📦</div>
                 @endif
@@ -201,15 +212,44 @@
 @endsection
 
 @push('scripts')
+@php 
+    $imagePaths = $product->images->map(fn($img) => asset('storage/' . $img->path))->toArray();
+@endphp
 <script>
-function switchImage(btn, src) {
+const productImages = {!! json_encode($imagePaths) !!};
+let currentImgIndex = 0;
+
+function switchImage(btn, src, index) {
+    if (index !== undefined) {
+        currentImgIndex = index;
+    }
     document.getElementById('mainImg').src = src;
-    btn.parentElement.querySelectorAll('button').forEach(b => {
-        b.classList.remove('border-primary', 'shadow-md');
-        b.classList.add('border-transparent', 'opacity-60');
-    });
-    btn.classList.add('border-primary', 'shadow-md');
-    btn.classList.remove('border-transparent', 'opacity-60');
+    
+    // Update thumbnails
+    const thumbContainer = document.querySelector('.flex-row.lg\\:flex-col');
+    if (thumbContainer) {
+        thumbContainer.querySelectorAll('button').forEach((b, idx) => {
+            if (idx === currentImgIndex) {
+                b.classList.add('border-primary', 'shadow-md');
+                b.classList.remove('border-transparent', 'opacity-60');
+            } else {
+                b.classList.remove('border-primary', 'shadow-md');
+                b.classList.add('border-transparent', 'opacity-60');
+            }
+        });
+    }
+}
+
+function nextImage() {
+    if (productImages.length <= 1) return;
+    currentImgIndex = (currentImgIndex + 1) % productImages.length;
+    switchImage(null, productImages[currentImgIndex]);
+}
+
+function prevImage() {
+    if (productImages.length <= 1) return;
+    currentImgIndex = (currentImgIndex - 1 + productImages.length) % productImages.length;
+    switchImage(null, productImages[currentImgIndex]);
 }
 
 function changeQty(delta) {
@@ -247,7 +287,11 @@ function closeLightbox() {
     setTimeout(() => overlay.classList.add('hidden'), 300);
     document.body.style.overflow = '';
 }
-document.addEventListener('keydown', e => { if (e.key === 'Escape') closeLightbox(); });
+document.addEventListener('keydown', e => { 
+    if (e.key === 'Escape') closeLightbox(); 
+    if (e.key === 'ArrowRight') nextImage();
+    if (e.key === 'ArrowLeft') prevImage();
+});
 
 // Sticky cart bar
 const pdpForm = document.getElementById('pdpAddForm');

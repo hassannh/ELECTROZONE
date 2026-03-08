@@ -54,21 +54,21 @@ class ProductController extends Controller
     {
         $data = $request->validate([
             'name'              => 'required|string|max:255',
-            'description'       => 'required|string',
-            'short_description' => 'required|string|max:500',
-            'price'             => 'required|numeric|min:0',
+            'description'       => 'nullable|string',
+            'short_description' => 'nullable|string|max:500',
+            'price'             => 'nullable|numeric|min:0',
             'old_price'         => 'nullable|numeric|min:0',
-            'stock_quantity'    => 'required|integer|min:0',
+            'stock_quantity'    => 'nullable|integer|min:0',
             'category_id'       => 'nullable|exists:categories,id',
-            'brand'             => 'required|string|max:100',
+            'brand'             => 'nullable|string|max:100',
             'specifications'    => 'nullable|string',
             'features'          => 'nullable|string',
             'is_active'         => 'boolean',
             'is_featured'       => 'boolean',
             'is_new'            => 'boolean',
             'is_on_sale'        => 'boolean',
-            // mimes: allowlist by actual MIME type; max 4 MB per image
-            'images.*'          => 'nullable|file|mimes:jpg,jpeg,png,webp,gif|max:4096',
+            // Allow up to 20 images
+            'images.*'          => 'nullable|file|mimes:jpg,jpeg,png,webp,gif|max:5120',
         ]);
 
         // Double-check with finfo (catches renamed executables like evil.php → photo.jpg)
@@ -100,6 +100,9 @@ class ProductController extends Controller
             $data['features'] = null;
         }
 
+        $data['price']          = $data['price'] ?? 0;
+        $data['stock_quantity'] = $data['stock_quantity'] ?? 0;
+
         $product = Product::create($data);
 
         // Handle image uploads
@@ -128,20 +131,20 @@ class ProductController extends Controller
     {
         $data = $request->validate([
             'name'              => 'required|string|max:255',
-            'description'       => 'required|string',
-            'short_description' => 'required|string|max:500',
-            'price'             => 'required|numeric|min:0',
+            'description'       => 'nullable|string',
+            'short_description' => 'nullable|string|max:500',
+            'price'             => 'nullable|numeric|min:0',
             'old_price'         => 'nullable|numeric|min:0',
-            'stock_quantity'    => 'required|integer|min:0',
+            'stock_quantity'    => 'nullable|integer|min:0',
             'category_id'       => 'nullable|exists:categories,id',
-            'brand'             => 'required|string|max:100',
+            'brand'             => 'nullable|string|max:100',
             'specifications'    => 'nullable|string',
             'features'          => 'nullable|string',
             'is_active'         => 'boolean',
             'is_featured'       => 'boolean',
             'is_new'            => 'boolean',
             'is_on_sale'        => 'boolean',
-            'images.*'          => 'nullable|file|mimes:jpg,jpeg,png,webp,gif|max:4096',
+            'images.*'          => 'nullable|file|mimes:jpg,jpeg,png,webp,gif|max:5120',
         ]);
 
         // finfo double-check for disguised file uploads

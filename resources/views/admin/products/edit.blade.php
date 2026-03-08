@@ -10,37 +10,37 @@
 
         <div class="form-grid-2">
             <div class="form-group">
-                <label>Product Name *</label>
+                <label>Product Name <span class="text-primary">*</span></label>
                 <input type="text" name="name" value="{{ old('name', $product->name) }}" class="input" required>
             </div>
             <div class="form-group">
-                <label>Brand *</label>
-                <input type="text" name="brand" value="{{ old('brand', $product->brand) }}" class="input" required>
+                <label>Brand</label>
+                <input type="text" name="brand" value="{{ old('brand', $product->brand) }}" class="input">
             </div>
         </div>
 
         <div class="form-group">
-            <label>Short Description *</label>
-            <input type="text" name="short_description" value="{{ old('short_description', $product->short_description) }}" class="input" required>
+            <label>Short Description</label>
+            <input type="text" name="short_description" value="{{ old('short_description', $product->short_description) }}" class="input">
         </div>
 
         <div class="form-group">
-            <label>Full Description *</label>
-            <textarea name="description" rows="5" class="input textarea" required>{{ old('description', $product->description) }}</textarea>
+            <label>Full Description</label>
+            <textarea name="description" rows="5" class="input textarea">{{ old('description', $product->description) }}</textarea>
         </div>
 
         <div class="form-grid-3">
             <div class="form-group">
-                <label>Price (MAD) *</label>
-                <input type="number" name="price" value="{{ old('price', $product->price) }}" class="input" step="0.01" min="0" required>
+                <label>Price (MAD)</label>
+                <input type="number" name="price" value="{{ old('price', $product->price) }}" class="input" step="0.01" min="0">
             </div>
             <div class="form-group">
                 <label>Old Price (MAD)</label>
                 <input type="number" name="old_price" value="{{ old('old_price', $product->old_price) }}" class="input" step="0.01" min="0">
             </div>
             <div class="form-group">
-                <label>Stock Quantity *</label>
-                <input type="number" name="stock_quantity" value="{{ old('stock_quantity', $product->stock_quantity) }}" class="input" min="0" required>
+                <label>Stock Quantity</label>
+                <input type="number" name="stock_quantity" value="{{ old('stock_quantity', $product->stock_quantity) }}" class="input" min="0">
             </div>
         </div>
 
@@ -86,7 +86,7 @@
         @endif
 
         <div class="form-group">
-            <label>Add More Images</label>
+            <label>Add More Images <small>(Select multiple files. Max 20, JPG/PNG/WebP, max 5MB each)</small></label>
             <input type="file" name="images[]" multiple accept="image/*" class="input-file">
         </div>
 

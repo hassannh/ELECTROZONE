@@ -27,7 +27,7 @@
                     <th>Product</th>
                     <th>Category</th>
                     <th>Price</th>
-                    <th>Stock</th>
+                    <th>Price</th>
                     <th>Status</th>
                     <th>Actions</th>
                 </tr>
@@ -50,11 +50,6 @@
                     </td>
                     <td>{{ $product->category?->name ?? '—' }}</td>
                     <td>{{ number_format($product->price, 2) }} MAD</td>
-                    <td>
-                        <span class="{{ $product->stock_quantity == 0 ? 'text-danger' : ($product->stock_quantity <= 5 ? 'text-warning' : 'text-success') }}">
-                            {{ $product->stock_quantity }}
-                        </span>
-                    </td>
                     <td>
                         <div class="status-flags">
                             @if($product->is_active)<span class="flag flag-green">Active</span>@else<span class="flag flag-red">Hidden</span>@endif
@@ -95,12 +90,6 @@
             <div class="mobile-card-row">
                 <span class="mobile-card-label">Price:</span>
                 <span class="mobile-card-value">{{ number_format($product->price, 0) }} MAD</span>
-            </div>
-            <div class="mobile-card-row">
-                <span class="mobile-card-label">Stock:</span>
-                <span class="mobile-card-value {{ $product->stock_quantity == 0 ? 'text-danger' : ($product->stock_quantity <= 5 ? 'text-warning' : 'text-success') }}">
-                    {{ $product->stock_quantity }}
-                </span>
             </div>
             <div class="mobile-card-actions">
                 <a href="{{ route('admin.products.edit', $product) }}" class="btn btn-ghost btn-xs">Edit</a>

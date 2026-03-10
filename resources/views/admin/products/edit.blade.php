@@ -38,10 +38,6 @@
                 <label>Old Price (MAD)</label>
                 <input type="number" name="old_price" value="{{ old('old_price', $product->old_price) }}" class="input" step="0.01" min="0">
             </div>
-            <div class="form-group">
-                <label>Stock Quantity</label>
-                <input type="number" name="stock_quantity" value="{{ old('stock_quantity', $product->stock_quantity) }}" class="input" min="0">
-            </div>
         </div>
 
         <div class="form-group">

@@ -39,10 +39,6 @@
                 <label>Old Price (MAD) <small>optional, for sale</small></label>
                 <input type="number" name="old_price" value="{{ old('old_price') }}" class="input" step="0.01" min="0">
             </div>
-            <div class="form-group">
-                <label>Stock Quantity</label>
-                <input type="number" name="stock_quantity" value="{{ old('stock_quantity', 0) }}" class="input" min="0">
-            </div>
         </div>
 
         <div class="form-group">

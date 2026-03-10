@@ -56,7 +56,10 @@ class Product extends Model
 
     public function scopeInStock($query)
     {
-        return $query->where('stock_quantity', '>', 0);
+        return $query->where(function ($q) {
+            $q->whereNull('stock_quantity')
+              ->orWhere('stock_quantity', '>', 0);
+        });
     }
 
     public function scopeFeatured($query)
@@ -81,6 +84,6 @@ class Product extends Model
 
     public function isInStock(): bool
     {
-        return $this->stock_quantity > 0;
+        return is_null($this->stock_quantity) || $this->stock_quantity > 0;
     }
 }

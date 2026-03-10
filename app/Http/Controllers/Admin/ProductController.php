@@ -101,7 +101,7 @@ class ProductController extends Controller
         }
 
         $data['price']          = $data['price'] ?? 0;
-        $data['stock_quantity'] = $data['stock_quantity'] ?? 0;
+        // stock_quantity is now nullable
 
         $product = Product::create($data);
 
